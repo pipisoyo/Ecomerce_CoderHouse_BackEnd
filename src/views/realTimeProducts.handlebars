@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Lista de Productos en Tiempo Real</title>
+</head>
+
+<body>
+    <h1>Lista de Productos en Tiempo Real</h1>
+    <ul id="products-list">
+        {{#each this.products}}
+        <li>
+            <h2>{{title}}</h2>
+            <p>{{description}}</p>
+            <p>Precio: {{price}}</p>
+            <img src="{{thumbnail}}" alt="Imagen del producto">
+        </li>
+        {{/each}}
+    </ul>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+
+        socket.on('products', (products) => {
+            const productsList = document.getElementById('products-list');
+            productsList.innerHTML = '';
+
+            products.forEach((product) => {
+                const li = document.createElement('li');
+                const h2 = document.createElement('h2');
+                const p1 = document.createElement('p');
+                const p2 = document.createElement('p');
+                const img = document.createElement('img');
+
+                h2.innerText = product.title;
+                p1.innerText = product.description;
+                p2.innerText = `Precio: ${product.price}`;
+                img.src = product.thumbnail;
+                img.alt = 'Imagen del producto';
+
+                li.appendChild(h2);
+                li.appendChild(p1);
+                li.appendChild(p2);
+                li.appendChild(img);
+
+                productsList.appendChild(li);
+            });
+        });
+
+        socket.emit('realTimeProducts');
+    </script>
+</body>
+
+</html>

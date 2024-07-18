@@ -1,0 +1,54 @@
+<div>
+  <h1>Chat</h1>
+  <input id="chatbox">
+  <button id="sendButton">Enviar</button>
+  {{#each msg as |obj|}}
+  {{obj.socketid}}: {{obj.message}}
+  {{/each}}
+  <p id="log"></p>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/home.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  const socket = io();
+
+  let user;
+
+  window.onload = () => {
+    Swal.fire({
+      title: 'Identifícate',
+      text: 'Ingresa tu nombre de usuario',
+      input: "text",
+      inputValidator: (value) => {
+        return !value && "Necesitas escribir un nombre para continuar";
+      },
+      confirmButtonText: 'OK'
+    }).then((result) => {
+      user = result.value;
+      socket.emit('auth', user);
+    });
+  };
+
+  const chatbox = document.getElementById("chatbox");
+  const log = document.getElementById("log");
+  const sendButton = document.getElementById("sendButton");
+
+  sendButton.addEventListener('click', () => {
+    const message = chatbox.value.trim();
+    if (message !== "") {
+      socket.emit('message', { user: user, message: message });
+      chatbox.value = "";
+    }
+  });
+
+  socket.on('messageLogs', data => {
+    let messages = "";
+    data.forEach(msg => {
+      messages += `${msg.user} dice ${msg.message}<br/>`;
+    });
+    log.innerHTML = messages;
+  });
+</script>

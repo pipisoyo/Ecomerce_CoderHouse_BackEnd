@@ -1,0 +1,105 @@
+<div>
+  <a>Bienvenido {{this.user.name}}</a>
+  <a href="#" onclick="logout()">-  Cerrar Sesión  -</a>
+  <a href="#" onclick="window.history.back(); return false;">Atrás</a>
+</div>
+<h1>Carrito de compras</h1>
+<div class="error" style="display: none;">Carrito vacío o falta de stock</div>
+{{#if cart}}
+<h2>ID del carrito: {{cid}}</h2>
+
+<h3>Total del Carrito: <span id="cartTotal"></span></h3>
+
+<h3>Productos:</h3>
+{{#each products}}
+<div class="product" data-price="{{price}}" data-quantity="{{quantity}}">
+  <h4>{{title}}</h4>
+  <p>{{description}}</p>
+  <p>Precio: ${{price}}</p>
+  <p>Cantidad: {{quantity}}</p>
+  <p>Subtotal: <span class="subtotal"></span></p>
+</div>
+{{/each}}
+
+<button type="button" onclick="completePurchase('{{cid}}')" >Finalizar Compra</button>
+
+
+{{else}}
+<p>No se encontró el carrito</p>
+{{/if}}
+
+<script>
+  document.addEventListener('DOMContentLoaded', (event) => {
+    const products = document.querySelectorAll('.product');
+    let totalCart = 0; // 
+
+    products.forEach((product) => {
+      const price = parseFloat(product.getAttribute('data-price'));
+      const quantity = parseInt(product.getAttribute('data-quantity'), 10);
+      const subtotal = price * quantity;
+      totalCart += subtotal;
+
+      const subtotalElement = product.querySelector('.subtotal');
+      subtotalElement.textContent = `$${subtotal}`;
+    });
+
+
+    const cartTotalElement = document.getElementById('cartTotal');
+    cartTotalElement.textContent = `$${totalCart}`;
+  });
+
+  function logout() {
+    fetch('/api/sessions/logout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          window.location.href = "/login";
+        } else {
+          console.error('Error al cerrar sesión');
+        }
+      })
+      .catch(error => {
+        console.error('Error al cerrar sesión:', error);
+      });
+  }
+
+  // Función para completar la compra enviando una solicitud al servidor
+function completePurchase(cid) {
+ 
+  const formAction = "/api/carts/{{cid}}/purchase"
+  
+    fetch(formAction, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({cid})   
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else if (response.status === 409) {
+            document.querySelector('.error').style.display = 'block'; 
+            throw new Error('Error al completar la compra');
+        } else {
+          console.log("🚀 ~ completePurchase ~ response:", response)
+            throw new Error('Error en la solicitud');
+        }
+    })
+    
+    .then(data => {
+
+    const ticketCode = data.data.newTicket.code;
+    window.location.href = `/ticket/`+ticketCode;
+})
+        
+    .catch(error => {
+        console.error('Error al completar la compra:', error);
+        // Manejar errores, mostrar un mensaje de error, etc.
+    });
+}
+</script>

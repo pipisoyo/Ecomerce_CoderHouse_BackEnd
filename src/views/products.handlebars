@@ -1,0 +1,128 @@
+<div>
+  <a>Bienvenido {{this.user.first_name}} {{this.user.last_name}} -</a>
+  <a href="#" onclick="logout()">Cerrar Sesión</a>
+</div>
+{{#if result}}
+<select id="cartId" name="cartId" onchange="saveCartId(event)">
+  <option value="" selected>Seleccione el carrito</option>
+  {{#each users}}
+  <option value="{{cart}}">{{first_name}} {{last_name}} - Carrito Id : {{cart}} - </option>
+  {{/each}}
+</select>
+<a type="" id="cartLink" href="#" onclick="updateCartLink()">Ver Carrito</a>
+{{else}}
+<a type="" id="cartLink" href="/cart/{{this.cartId}}">Ver Carrito</a>
+
+{{/if}}
+
+<h1>Productos</h1>
+
+{{#if prevLink}}
+<a href="{{prevLink}}">Página anterior</a>
+{{/if}}
+
+{{#if nextLink}}
+<a href="{{nextLink}}">Página siguiente</a>
+{{/if}}
+
+{{#each products}}
+<div>
+  <h2>{{title}}</h2>
+  <p>{{description}}</p>
+  <p>Precio: {{price}}</p>
+  <p>Categoría: {{category}}</p>
+  <form id="cartForm" method="POST">
+    <input type="hidden" id="_id" name="_id" value="{{_id}}">
+    <button type="button" onclick="saveProductId(event, '{{_id}}')">Agregar al carrito</button>
+  </form>
+  <hr>
+</div>
+{{/each}}
+
+{{#if prevLink}}
+<a href="{{prevLink}}">Página anterior</a>
+{{/if}}
+
+{{#if nextLink}}
+<a href="{{nextLink}}">Página siguiente</a>
+{{/if}}
+
+<script>
+
+  let cartId = "{{cartId}}";
+
+  function saveCartId() {
+    const selectElement = document.getElementById("cartId");
+    const cartID = selectElement.value;
+    return cartID;
+  }
+
+  function saveProductId(event, pid) {
+    const result = "{{result}}"
+    console.log("🚀 ~ saveProductId ~ result:", result)
+    if (result === "true") {
+
+      cartId = saveCartId();
+    }
+    const prodID = pid;
+    console.log("🚀 ~ prodID:", prodID);
+    updateForm(prodID, cartId);
+  }
+
+  function updateForm(prodID, cartID) {
+    if (!cartID) {
+      alert("Seleccione un carrito");
+    } else {
+      const formAction = "/api/carts/" + cartID + "/product/" + prodID;
+
+
+      fetch(formAction, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prodID: prodID }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          alert(data.message);
+        })
+        .catch((error) => {
+          alert('Error al agregar el producto');
+        });
+    }
+  }
+
+  function updateCartLink() {
+    let cartID = saveCartId();
+    if (!cartID) {
+      alert("Seleccione un carrito");
+    } else {
+      const cartLink = document.getElementById("cartLink");
+      cartLink.href = "/cart/" + cartID;
+    }
+  }
+
+  function logout() {
+    fetch('/api/sessions/logout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          window.location.href = "/login";
+        } else {
+          console.error('Error al cerrar sesión');
+        }
+      })
+      .catch(error => {
+        console.error('Error al cerrar sesión:', error);
+      });
+  }
+
+  function goBack() {
+    window.history.back();
+  }
+</script>

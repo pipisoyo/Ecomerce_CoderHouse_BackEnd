@@ -1,0 +1,219 @@
+paths :
+#trae todos los productos
+  /api/products/:
+    get:
+      summary: Obtiene todos los productos
+      tags:
+        - Products
+      responses:
+        "200":
+          description: Productos recuperados con éxito
+          content:
+            apllication/json:
+              schema:
+                type: array
+                items:
+                  $ref : '#/components/schemas/Product'
+        "500" : 
+          description: Error al recuperar los productos
+#agregar un producto
+    post:
+      summary: Agrega un producto
+      tags:
+        - Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/updateProduct'
+      responses:
+        "200":
+          description: Producto agregado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        "500":
+          description: Error al agregar un producto
+#insertar un documento
+  /api/products/insert:
+    post:
+      summary: Agrega un arreglo de productos
+      tags:
+        - Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/updateProduct'
+      responses:
+        "201":
+          description: Documentos insertados con éxito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        "401":
+          description: No autorizado 
+        "500":
+          description: Error al insertar los documentos
+  /api/products/{pid}:
+#trea un producto por su id
+    get:
+      summary: Obtiene un producto por id
+      tags:
+        - Products
+      parameters:
+      - name: pid
+        in: path
+        requiered: true
+        description : Parametro id del producto
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Producto recuperados con éxito
+          content:
+            apllication/json:
+              schema:
+                type: array
+                items:
+                  $ref : '#/components/schemas/Product'
+        "404":
+          description: Producto no encotrado
+        "500": 
+          description: Error al recuperar el producto
+# modifica un producto por su id
+    put:
+      summary: Actualiza un producto por id
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: ID del producto a actualizar
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/updateProduct'
+      responses:
+        "200":
+          description: Producto actualizado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        "401":
+          description: No autorizado 
+        "404":
+          description: Producto no encontrado
+        "500":
+          description: Error al actualizar el producto
+    delete:
+      summary: Elimina un producto por id
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: ID del producto a eliminar
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Producto eliminado con éxito
+        "401":
+          description: No autorizado 
+        "404":
+          description: Producto no encontrado
+        "500":
+          description: Error al eliminar el producto  
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        _id:
+          type: objectId 
+          description: id autogenerado
+        title:
+          type: string
+          description: nombre del producto
+        description:
+          type: string
+          description: descripcion del producto
+        price:
+          type: number
+          description: precio del producto
+        code:
+          type: string
+          description: codigo del producto
+        stock:
+          type: number
+          description: existencias del producto
+        status:
+          type: boolean
+          description: estado del producto
+        category:
+          type: string
+          description: categoria del producto
+        thumbnails:
+          type: array
+          description: imagen del producto
+        owner:
+          type: string
+          description: creador del producto
+      example:
+        _id: "66683718447164b916ec3219"
+        title: "Increible Acero Camiseta"
+        description: "Exercitationem omnis atqui depono. Clibanus contra benevolentia tibi defetiscor curto consequatur solium ad viriliter."
+        price: 386
+        code: "75876091"
+        stock: 6
+        status: true
+        category: "Hogar"
+        thumbnails:
+          - "https://loremflickr.com/640/480?lock=4571190026829824"
+        owner: "admin"
+  requestBodies:
+    updateProduct:
+      type: object
+      properties:
+        title:
+          type: string
+          description: nombre del producto
+        description:
+          type: string
+          description: descripcion del producto
+        price:
+          type: number
+          description: precio del producto
+        code:
+          type: string
+          description: codigo del producto
+        stock:
+          type: number
+          description: existencias del producto
+        status:
+          type: boolean
+          description: estado del producto
+        category:
+          type: string
+          description: categoria del producto
+        thumbnails:
+          type: array
+          items:
+            type: string
+            description: Arreglo de cadenas que representan las imágenes del producto

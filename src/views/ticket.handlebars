@@ -1,0 +1,22 @@
+<!-- Detalles de la Compra -->
+<h1>Detalles de la Compra</h1>
+
+<!-- Ticket de Compra -->
+<h2>N° de Ticket: {{ticket.code}}</h2>
+<p>Fecha de Compra: {{ticket.purchase_datetime}}</p>
+<p>Comprador: {{this.ticket.purchaser}}</p>
+
+<!-- Productos Comprados -->
+<h2>Productos Comprados:</h2>
+<ul>
+    {{#each products}}
+    <li>{{title}} - Cantidad: {{quantity}}</li>
+    {{/each}}
+</ul>
+
+<!-- Cantidad Total -->
+<h3>Total a Pagar: {{ticket.amount}}</h3>
+
+<script>
+console.log("acatoy")
+</script>

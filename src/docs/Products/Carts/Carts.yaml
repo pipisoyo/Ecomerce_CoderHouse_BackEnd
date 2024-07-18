@@ -1,0 +1,210 @@
+paths:
+#obtener carrito por Id
+  /api/carts/{cid}:
+    get:
+      summary: Obtiene un carrito por ID
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID del carrito
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Carrito recuperado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        "404":
+          description: Carrito no encontrado
+        "500":
+          description: Error al recuperar el carrito
+#actualizar carrito con arreglo
+    put:
+      summary: Actualiza un carrito con arreglo
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID del carrito a actualizar
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/updateCart'
+      responses:
+        "200":
+          description: Carrito actualizado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        "401":
+          description: No autorizado
+        "404":
+          description: Carrito no encontrado
+        "500":
+          description: Error al actualizar el carrito
+#vaciar carrito
+    delete:
+      summary: Vaciar carrito 
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID del carrito a vaciar
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Carrito vaciado con éxito
+        "401":
+          description: No autorizado
+        "404":
+          description: Carrito no encontrado
+        "500":
+          description: Error al vaciar el carrito
+#agregar un producto al carrito
+  /api/carts/{cid}/product/{pid}:
+    post:
+      summary: Agrega un producto a un carrito
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID del carrito
+          schema:
+            type: string
+        - name: pid
+          in: path
+          required: true
+          description: ID del producto a agregar
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Producto agregado al carrito con éxito
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        "401":
+          description: No autorizado
+        "404":
+          description: Carrito o producto no encontrado
+        "500":
+          description: Error al agregar el producto al carrito
+#eliminar un producto del carrito
+    delete:
+      summary: Elimina un producto del carrito
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID del carrito
+          schema:
+            type: string
+        - name: pid
+          in: path
+          required: true
+          description: ID del producto a eliminar
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Producto eliminado del carrito con éxito
+        "401":
+          description: No autorizado
+        "404":
+          description: Producto o Carrito no encontrado
+        "500":
+          description: Error al eliminar el producto del carrito
+#Actualiza la cantidad de un producto en un carrito
+  /api/carts/{cid}/products/{pid}:
+    put:
+      summary: Actualiza la cantidad de un producto en un carrito
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID del carrito
+          schema:
+            type: string
+        - name: pid
+          in: path
+          required: true
+          description: ID del producto a actualizar
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: number
+                  description: Nueva cantidad del producto
+      responses:
+        "200":
+          description: Cantidad del producto actualizada con éxito
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        "401":
+          description: No autorizado
+        "404":
+          description: Carrito o producto no encontrado
+        "500":
+          description: Error al actualizar la cantidad del producto en el carrito
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              product:
+                type: string
+                description: ID del producto
+              quantity:
+                type: number
+                description: Cantidad del producto en el carrito
+
+  requestBodies:
+    updateCart:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              product:
+                type: string
+                description: ID del producto
+              quantity:
+                type: number
+                description: Cantidad del producto en el carrito

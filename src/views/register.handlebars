@@ -1,0 +1,25 @@
+<div>
+    <h1>Registro</h1>
+    <form id="registerForm">
+        <label>Nombre</label>
+        <input name="first_name" required>
+        <br />
+        <label>Apellido</label>
+        <input name="last_name" required>
+        <br />
+        <label>Email</label>
+        <input name="email" type="email" required>
+        <!-- Espacio reservado para el mensaje de error -->
+        <div id="emailError" style="color: red;"></div>
+        <br />
+        <label>Edad</label>
+        <input name="age" type="number" required>
+        <br />
+        <label>Contraseña</label>
+        <input type="password" name="password" required>
+        <br />
+        <input type="submit" value="Registrarse">
+    </form>
+    <p>¿Ya tienes una cuenta? <a href="/login">Ingresa aquí</a></p>
+</div>
+<script src="/js/register.js"></script>
