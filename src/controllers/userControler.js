@@ -15,8 +15,15 @@ const userContorler = {
             req.logger.info('obteniendo usuarios')
             try {
                 const result = await users.getAll();
+                const usersResponse = result.map(user => {
+                    return {
+                        first_name: user.first_name,
+                        email : user.email,
+                        role : user.role
+                    }
+                })
                 req.logger.info('Usuarios recuperados')
-                return response.successResponse(res,200,"Usuarios recuperado con exito",result)
+                return response.successResponse(res,200,"Usuarios recuperado con exito",usersResponse)
             } catch (error) {
                 req.logger.error("Error al recuperar los usuarios")
                 return response.errorResponse(res,500,"Error al recuperar los usuarios")
