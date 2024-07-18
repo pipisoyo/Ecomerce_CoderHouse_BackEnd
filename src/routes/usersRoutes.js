@@ -1,21 +1,25 @@
 import express from "express";
-import userControler from "../controllers/userControler.js"
+import UserController from "../controllers/userControler.js"
 import { authUser } from "../config/auth.js";
 import { upload } from "../utils/multer.js";
 import userModel from "../dao/models/users.js";
 import { validateDocumentKeys } from "../utils/validateDocumentkeys.js";
 
-const userRouter = express()
+const userRouter = express.Router(); 
 
-userRouter.get("/", authUser(['admin']), userControler.getAll)
+const userController = new UserController(); 
 
-userRouter.put('/premiun/:uid', authUser(['admin']), userControler.premiun);
+userRouter.get("/", authUser(['admin']), (req, res) => userController.getAll(req, res)); 
+
+userRouter.put('/premiun/:uid', authUser(['admin']), (req, res) => userController.premiun(req, res)); 
+
 
 userRouter.post('/:uid/documents', upload.fields([
-        { name: "identificacion", maxCount: 1 },
-        { name: "domicilio", maxCount: 1 },
-        { name: "cuenta", maxCount: 1 },
-        { name: "profileImage", maxCount: 1 },
-        { name: "productImage", maxCount: 1 }
-    ]), userControler.uploadDocuments);
+    { name: "identificacion", maxCount: 1 },
+    { name: "domicilio", maxCount: 1 },
+    { name: "cuenta", maxCount: 1 },
+    { name: "profileImage", maxCount: 1 },
+    { name: "productImage", maxCount: 1 }
+]), (req, res) => userController.uploadDocuments(req, res)); 
+
 export default userRouter;

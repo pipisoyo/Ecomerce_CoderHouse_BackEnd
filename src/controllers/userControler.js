@@ -2,24 +2,21 @@ import response from '../config/responses.js';
 import userModel from '../dao/models/users.js';
 import UserManager from '../dao/mongo/user.mongo.js';
 import { addLogger } from '../utils/logger.js';
-import { __dirname } from '../config.js';
 import fs from 'fs';
 
 const users = new UserManager();
 
-const userController = {
-    getAll: async function(req, res) {
-        addLogger(req, res, async function() {
+class UserController {
+    async getAll(req, res) {
+        addLogger(req, res, async () => {
             req.logger.info('obteniendo usuarios');
             try {
                 const result = await users.getAll();
-                const usersResponse = result.map(user => {
-                    return {
-                        first_name: user.first_name,
-                        email: user.email,
-                        role: user.role
-                    };
-                });
+                const usersResponse = result.map(user => ({
+                    first_name: user.first_name,
+                    email: user.email,
+                    role: user.role
+                }));
                 req.logger.info('Usuarios recuperados');
                 return response.successResponse(res, 200, "Usuarios recuperados con éxito", usersResponse);
             } catch (error) {
@@ -27,12 +24,12 @@ const userController = {
                 return response.errorResponse(res, 500, "Error al recuperar los usuarios");
             }
         });
-    },
+    }
 
-    premiun: function(req, res) {
-        addLogger(req, res, async function() {
+    premiun(req, res) {
+        addLogger(req, res, async () => {
             req.logger.info('Verificando información');
-            const uid = req.params.uid;
+            const { uid } = req.params;
             userModel.findById(uid).then(user => {
                 if (!user) {
                     req.logger.error('No se encuentra el usuario');
@@ -61,12 +58,12 @@ const userController = {
                 });
             });
         });
-    },
+    }
 
-    uploadDocuments: async function(req, res) {
+    async uploadDocuments(req, res) {
         const { uid } = req.params;
         const files = req.files;
-        addLogger(req, res, async function() {
+        addLogger(req, res, async () => {
             try {
                 const user = await userModel.findById(uid);
                 if (!user) {
@@ -87,7 +84,7 @@ const userController = {
                         req.logger.info("Documento cargado correctamente"); // Agregar nuevo documento
                     }
                 });
-                
+
                 // Actualizar el estado del usuario
                 user.status = 'Documentos subidos';
                 await user.save();
@@ -95,9 +92,9 @@ const userController = {
             } catch (error) {
                 req.logger.error("Error al subir los documentos");
                 return response.errorResponse(res, 500, 'Error al subir los documentos');
-            }
+            };
         });
     }
-};
+}
 
-export default userController;
+export default UserController;
