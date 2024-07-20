@@ -6,7 +6,7 @@ class UserManager {
         try {
             return await userModel.find()
         } catch (error) {
-            throw new Error ("Error al recuperar los productos")
+            throw new Error ("Error al recuperar los usuarios")
         }
     }
 }

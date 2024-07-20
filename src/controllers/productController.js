@@ -5,6 +5,7 @@ import { CustomError } from "../utils/customError.js";
 import { errorTypes } from "../utils/errorTypes.js"
 import { validarProducto } from "../utils/producstErros.js";
 import { addLogger } from '../utils/logger.js';
+import { sendMailProductDelete } from '../utils/mailing.js';
 
 
 /**
@@ -75,7 +76,7 @@ const productController = {
             let userRole = req.session.user.role;
             console.log("🚀 ~ addLogger ~ userRole:", userRole)
             let owner = "admin"
-            if ( userRole == "premium") {
+            if ( userRole == "premiun") {
                 owner=req.session.user.email
                 }
             let product = Object.keys(req.body)
@@ -182,6 +183,7 @@ const productController = {
             req.logger.info('Eliminando un producto');
             let userEmail = req.session.user.email;
             let userRole = req.session.user.role;
+            let userName = req.session.user.first_name;
             try {
                 const id = req.params._id;
                 let product = await productsService.getById(id);
@@ -200,6 +202,7 @@ const productController = {
                 const data = await productsService.getAll();
     
                 if (result) {
+                    sendMailProductDelete(userEmail,userName,product.title)
                     req.logger.info('Producto eliminado con éxito');
                     io.emit('products', data.result);
                     return res.status(201).send({ status: "success", payload: result });

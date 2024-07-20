@@ -1,6 +1,7 @@
 <div>
   <a>Bienvenido {{this.user.first_name}} {{this.user.last_name}} -</a>
-  <a href="#" onclick="logout()">Cerrar Sesión</a>
+  <a href="#" onclick="logout()">Cerrar Sesión -</a>
+  <a onclick="userRole('{{this.user.role}}')" data-role-link="admin" href="">Administracion</a>
 </div>
 {{#if result}}
 <select id="cartId" name="cartId" onchange="saveCartId(event)">
@@ -49,6 +50,13 @@
 
 <script>
 
+  function userRole(role) {
+    let href = "/";
+    if (role === "admin") {
+      href = "/admin";
+    }
+    document.querySelector('a[data-role-link="admin"]').setAttribute('href', href);
+  }
   let cartId = "{{cartId}}";
 
   function saveCartId() {
@@ -121,6 +129,7 @@
         console.error('Error al cerrar sesión:', error);
       });
   }
+
 
   function goBack() {
     window.history.back();

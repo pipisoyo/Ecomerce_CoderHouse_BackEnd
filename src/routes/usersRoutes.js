@@ -22,4 +22,8 @@ userRouter.post('/:uid/documents', upload.fields([
     { name: "productImage", maxCount: 1 }
 ]), (req, res) => userController.uploadDocuments(req, res)); 
 
+userRouter.delete("/delete", authUser(['admin']),(req,res)=>userController.delate(req,res))
+
+userRouter.delete("/delete/:uid", authUser(['admin']),(req,res)=>userController.deleteUser(req,res))
+
 export default userRouter;

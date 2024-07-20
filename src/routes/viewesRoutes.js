@@ -67,6 +67,8 @@ viewRoutes.get('/mailRestore', viewsController.renderMailRestore);
  */
 viewRoutes.get('/ticket/:tcode', viewsController.renderTicket);
 
+viewRoutes.get('/admin', authUser(["admin"]), viewsController.renderAdminUsers);
+
 /**
  * Exporta los enrutadores de las rutas viewes.
  * @module viewRoutes

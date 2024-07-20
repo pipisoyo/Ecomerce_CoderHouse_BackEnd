@@ -1,0 +1,78 @@
+<h1>Admin Users</h1>
+
+<!-- Mostrar la lista de usuarios -->
+<div id="errorMessage" style="color: red; display: none;"></div>
+
+<table>
+    <tr>
+        <th>Nombre</th>
+        <th>Correo Electrónico</th>
+        <th>Rol</th>
+        <th>Acciones</th>
+    </tr>
+    {{#each users}}
+    <tr>
+        <td>{{first_name}} {{last_name}}</td>
+        <td>{{email}}</td>
+        <td>{{role}}</td>
+        <td>
+            <!-- Botón para cambiar el rol -->
+            <button type="button" onclick="changeRole('{{_id}}')">Cambiar Rol</button>
+            <!-- Botón para eliminar usuario -->
+            <button type="button" onclick="deleteUser('{{_id}}')">Eliminar</button>
+        </td>
+    </tr>
+    {{/each}}
+</table>
+
+<script>
+    function changeRole(_id) {
+        fetch(`/api/users/premiun/${_id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId: _id })
+        })
+        .then(response => {
+            if (!response.ok) {
+                if (response.status === 400) {
+                    document.getElementById("errorMessage").innerText = "No se puede cambiar el rol del usuario. Falta documentación";
+                    document.getElementById("errorMessage").style.display = "block";
+                }
+                throw new Error('Error al cambiar el rol');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Rol cambiado con éxito:', data);
+            location.reload(); // Recargar la página después de cambiar el rol
+        })
+        .catch(error => {
+            console.error('Error al cambiar el rol:', error);
+        });
+    }
+
+    function deleteUser(_id) {
+        fetch(`/api/users/delete/${_id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId: _id })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al eliminar el usuario');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Usuario eliminado con éxito:', data);
+            location.reload();
+        })
+        .catch(error => {
+            console.error('Error al eliminar el usuario:', error);
+        });
+    }
+</script>

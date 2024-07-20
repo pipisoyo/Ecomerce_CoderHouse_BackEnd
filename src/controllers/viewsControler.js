@@ -179,6 +179,20 @@ const viewsController = {
                 }
             });
         },
+
+        renderAdminUsers: (req, res) => {
+            addLogger(req, res, async () => {
+                try {
+                    const users = await userModel.find({}).lean().exec();
+                    req.logger.info('Obteniendo usuarios para administrador');
+        
+                    res.render('admin-users', { users }); // Renderiza la vista admin-users con la lista de usuarios
+                } catch (error) {
+                    req.logger.error('Error al obtener los usuarios: ' + error.message);
+                    response.errorResponse(res, 500, "Error al obtener los usuarios");
+                }
+            });
+        }
 };
 
 export default viewsController;

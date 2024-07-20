@@ -62,3 +62,58 @@ export function getEmailFromToken(token) {
         return null;
     }
 }
+
+export async function sendInactiveAccountNotification(userEmail, username) {
+    try {
+        // Enviar correo electrónico de notificación de cuenta inactiva
+        const response = await sendMailInactiveAccount(userEmail, username);
+        console.log(response); // Confirmación del envío del correo electrónico
+    } catch (error) {
+        console.error("Error al enviar la notificación de cuenta inactiva:", error);
+        throw error;
+    }
+}
+
+export async function sendMailInactiveAccount(email, username) {
+    const transport = nodemailer.createTransport(mailOptions);
+
+    try {
+        const result = await transport.sendMail({
+            from: `Correo de prueba`,
+            to: email,
+            subject: "Notificación de cuenta inactiva",
+            html: `<div>
+                <h1>Notificación de cuenta inactiva</h1>
+                <p>Hola ${username},</p>
+                <p>Tu cuenta ha sido eliminada debido a inactividad. Por favor, contáctanos si deseas recuperarla.</p>
+            </div>`,
+        });
+        
+        return "Correo de notificación enviado correctamente";
+    } catch (error) {
+        console.error("Error al enviar el correo de notificación:", error);
+        throw error; 
+    }
+}
+
+export async function sendMailProductDelete(email, username,product) {
+    const transport = nodemailer.createTransport(mailOptions);
+
+    try {
+        const result = await transport.sendMail({
+            from: `Correo de prueba`,
+            to: email,
+            subject: "Notificación de eliminacion de producto",
+            html: `<div>
+                <h1>Notificación de eliminacion de producto</h1>
+                <p>Hola ${username},</p>
+                <p>Se a eliminado el producto : ${product} de la base de datos.</p>
+            </div>`,
+        });
+        
+        return "Correo de notificación enviado correctamente";
+    } catch (error) {
+        console.error("Error al enviar el correo de notificación:", error);
+        throw error; 
+    }
+}

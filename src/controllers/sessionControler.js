@@ -42,6 +42,7 @@ const sessionController = {
      */
     register: (req, res) => {
         let userData = req.user
+        userData.last_connection = new Date(); 
         addLogger(req, res, () => {
             req.logger.info('Registrando nuevo usuario');
             response.successResponse(res, 201, 'Usuario registrado exitosamente', userData);
@@ -84,7 +85,7 @@ const sessionController = {
             };
             const user = userDTO(req.user);
             req.logger.info('Inicio de sesión exitoso');
-            req.user.last_connection = new Date()
+            user.last_connection = new Date()
             if (mode === "dev") {
                 const data = { user, userId: req.user._id.toString() };
                 response.successResponse(res, 200, 'Inicio de sesión exitoso', data);

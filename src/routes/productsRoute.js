@@ -25,7 +25,7 @@ productsRouter.get("/:_id", productController.getById);
  * @name POST /products
  * @function
  */
-productsRouter.post("/", authUser(['admin','premium']) , productController.addProduct);
+productsRouter.post("/", authUser(['admin','premiun']) , productController.addProduct);
 
 /**
  * Ruta para insertar un documento.
@@ -46,7 +46,7 @@ productsRouter.put("/:_id", authUser(['admin']), productController.updateProduct
  * @name DELETE /products/:_id
  * @function
  */
-productsRouter.delete("/:_id", authUser(['admin','premium']), productController.deleteProduct );
+productsRouter.delete("/:_id", authUser(['admin','premiun']), productController.deleteProduct );
 
 
 
