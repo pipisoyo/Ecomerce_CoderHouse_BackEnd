@@ -163,6 +163,7 @@ const viewsController = {
             addLogger(req, res, async () => {
                 try {
                     const ticketCode = req.params.tcode;
+                    console.log("🚀 ~ addLogger ~ ticketCode:", ticketCode)
                     const ticket = await ticketModel.findOne({ code: ticketCode }).lean().exec();
                     req.logger.info('Obteniendo datos del ticket');
         

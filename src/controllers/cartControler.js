@@ -213,6 +213,7 @@ const cartControler = {
             
             req.logger.info('Finalizando el proceso de compra de un carrito');
             const cid = req.params.cid;
+            console.log("🚀 ~ addLogger ~ cid:", cid)
 
             try {
                 // Obtener el carrito por su ID
@@ -233,7 +234,7 @@ const cartControler = {
                         await productsService.updateProduct(productId, productData);
                         productsToPurchase.push(cart.products[index]);
                     } else {
-                        productsNotPurchased.push({ product: cart.products[index].product, quantity: cart.products[index].quantity });
+                        productsNotPurchased.push   ({ product: cart.products[index].product, quantity: cart.products[index].quantity });
                     }
                 }
                 let purchaser = req.user.email || req.user.first_name
@@ -248,9 +249,11 @@ const cartControler = {
                         purchaser: purchaser,
                         productsToPurchase
                     };
+                    console.log("🚀 ~ addLogger ~ ticketData.code:", ticketData.code)
 
                     // Crear un nuevo ticket utilizando el modelo de Ticket de Mongoose
                     const newTicket = new ticketModel(ticketData);
+                    console.log("🚀 ~ addLogger ~ newTicket:", newTicket)
                     await newTicket.save();
 
                     // Manejo de productos no comprados

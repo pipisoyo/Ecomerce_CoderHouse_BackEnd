@@ -1,4 +1,7 @@
 <!-- Detalles de la Compra -->
+<a href="/products">Inicio - </a>
+ <a onclick="goBack()">Atrás</a>
+
 <h1>Detalles de la Compra</h1>
 
 <!-- Ticket de Compra -->
@@ -18,5 +21,13 @@
 <h3>Total a Pagar: {{ticket.amount}}</h3>
 
 <script>
-console.log("acatoy")
+    function goBack() {
+        // Retroceder a la página anterior
+        window.history.back();
+    }
+
+    // Actualizar la página al regresar a través del historial
+    window.onpopstate = function(event) {
+        location.reload();
+    };
 </script>

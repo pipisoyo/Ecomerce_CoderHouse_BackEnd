@@ -5,6 +5,7 @@ import ticketModel from '../dao/models/tickets.js';
 import { fakerES as faker } from '@faker-js/faker'
 import ProductDTO from '../dao/DTOs/products.dto.js';
 import multer from 'multer'
+import mongoose from 'mongoose';
 
 
 
@@ -32,21 +33,14 @@ export const isValidPassword = (user, password) => {
  * @returns {string} Código único generado.
  */
 export function generateUniqueCode(cartId, purchaseDatetime) {
-  // Combinar el ID del carrito y la fecha de compra en una cadena
+  // Combina el ID del carrito y la fecha de compra en una cadena
   const combinedString = cartId.toString() + purchaseDatetime.toISOString();
 
-  // Generar un hash único a partir de la cadena combinada
-  function generateHash(data) {
-    const saltRounds = 10;
-    const hash = bcrypt.hashSync(data, saltRounds);
-    return hash;
-  }
+  // Convierte la cadena combinada a una representación hexadecimal de 24 caracteres
+  const hexString = combinedString.split('').map(char => char.charCodeAt(0).toString(16)).join('').padStart(24, '0').slice(0, 24);
 
-  // Generar el hash único a partir de la cadena combinada
-  const hashCode = generateHash(combinedString);
-
-  // Devolver un código único basado en el hash generado
-  return hashCode;
+  // Devuelve el código único generado en forma de cadena hexadecimal
+  return hexString;
 }
 
 /**

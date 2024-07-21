@@ -18,6 +18,7 @@
   <p>Precio: ${{price}}</p>
   <p>Cantidad: {{quantity}}</p>
   <p>Subtotal: <span class="subtotal"></span></p>
+  <button onclick="deleteProduct('{{_id}}')">Eliminar del carrito</button>
 </div>
 {{/each}}
 
@@ -93,7 +94,7 @@ function completePurchase(cid) {
     
     .then(data => {
 
-    const ticketCode = data.data.newTicket.code;
+    const ticketCode = data.data.code;
     window.location.href = `/ticket/`+ticketCode;
 })
         
@@ -101,5 +102,27 @@ function completePurchase(cid) {
         console.error('Error al completar la compra:', error);
         // Manejar errores, mostrar un mensaje de error, etc.
     });
+}
+
+async function deleteProduct(_id, cid) {
+    const formAction = `/api/carts/{{cid}}/product/${_id}`;
+
+    try {
+        const response = await fetch(formAction, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Error al eliminar el producto');
+        }
+        location.reload();
+        console.log('Producto eliminado correctamente');
+
+    } catch (error) {
+        console.error('Error al eliminar el producto:', error);
+    }
 }
 </script>
