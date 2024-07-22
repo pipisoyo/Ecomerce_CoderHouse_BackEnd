@@ -33,7 +33,7 @@ export async function sendMailRestore(email) {
             html: `<div>
                 <h1>Restablecer contraseña</h1>
                 <h2>Haga click en el siguiente enlace para restablecer su contraseña</h2>
-                <a href="http://localhost:8000/restore/${token}">Restablecer Contraseña</a>
+                <a href=${config.url}"/restore/${token}">Restablecer Contraseña</a>
                 <h3>El enlace caduca en una hora</h3>
             </div>`,
         });
