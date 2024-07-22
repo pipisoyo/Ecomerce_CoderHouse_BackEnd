@@ -86,6 +86,7 @@ const sessionController = {
             const user = userDTO(req.user);
             req.logger.info('Inicio de sesión exitoso');
             user.last_connection = new Date()
+            console.log(req.user.last_connection)
             if (mode === "dev") {
                 const data = { user, userId: req.user._id.toString() };
                 response.successResponse(res, 200, 'Inicio de sesión exitoso', data);

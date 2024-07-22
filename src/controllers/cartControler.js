@@ -80,7 +80,7 @@ const cartControler = {
 
             const pid = req.params.pid;
             const cid = req.params.cid;
-            const quantity = 1;
+            const quantity = req.body.quantity || 1;
             let user = req.session.user;
 
             try {
@@ -249,11 +249,8 @@ const cartControler = {
                         purchaser: purchaser,
                         productsToPurchase
                     };
-                    console.log("🚀 ~ addLogger ~ ticketData.code:", ticketData.code)
 
-                    // Crear un nuevo ticket utilizando el modelo de Ticket de Mongoose
                     const newTicket = new ticketModel(ticketData);
-                    console.log("🚀 ~ addLogger ~ newTicket:", newTicket)
                     await newTicket.save();
 
                     // Manejo de productos no comprados

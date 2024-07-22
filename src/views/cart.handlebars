@@ -1,35 +1,55 @@
 <div>
-  <a>Bienvenido {{this.user.name}}</a>
-  <a href="#" onclick="logout()">-  Cerrar Sesión  -</a>
-  <a href="#" onclick="window.history.back(); return false;">Atrás</a>
+    <a>Bienvenido {{this.user.first_name}} {{this.user.last_name}}</a>
+    <a href="#" onclick="logout()">- Cerrar Sesión -</a>
+    <a href="#" onclick="window.history.back(); return false;">Seguir Comprando</a>
 </div>
 <h1>Carrito de compras</h1>
+<button type="button" onclick="clearCart('{{cid}}')">Vaciar Carrito</button>
 <div class="error" style="display: none;">Carrito vacío o falta de stock</div>
+
 {{#if cart}}
-<h2>ID del carrito: {{cid}}</h2>
-
-<h3>Total del Carrito: <span id="cartTotal"></span></h3>
-
-<h3>Productos:</h3>
-{{#each products}}
-<div class="product" data-price="{{price}}" data-quantity="{{quantity}}">
-  <h4>{{title}}</h4>
-  <p>{{description}}</p>
-  <p>Precio: ${{price}}</p>
-  <p>Cantidad: {{quantity}}</p>
-  <p>Subtotal: <span class="subtotal"></span></p>
-  <button onclick="deleteProduct('{{_id}}')">Eliminar del carrito</button>
-</div>
-{{/each}}
-
-<button type="button" onclick="completePurchase('{{cid}}')" >Finalizar Compra</button>
-
-
+    <h2>ID del carrito: {{cid}}</h2>
+    <h3>Total del Carrito: <span id="cartTotal"></span></h3>
+    <button type="button" onclick="completePurchase('{{cid}}')">Finalizar Compra</button>
+    <h3>Productos:</h3>
+    <div class="product-container">
+        {{#each products}}
+            <div class="product" data-price="{{price}}" data-quantity="{{quantity}}">
+                <h4>{{title}}</h4>
+                <span title="{{description}}" class="description-button">Descripción</span>
+                <p>Precio: ${{price}}</p>
+                <p>Cantidad: {{quantity}}</p>
+                <p>Subtotal: <span class="subtotal"></span></p>
+                <button onclick="deleteProduct('{{_id}}')">Eliminar del carrito</button>
+            </div>
+        {{/each}}
+    </div>
+    <button type="button" onclick="completePurchase('{{cid}}')">Finalizar Compra</button>
 {{else}}
-<p>No se encontró el carrito</p>
+    <p>No se encontró el carrito</p>
 {{/if}}
 
+
 <script>
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+    const products = document.querySelectorAll('.product');
+    let totalCart = 0;
+
+    products.forEach((product) => {
+      const price = parseFloat(product.getAttribute('data-price'));
+      const quantity = parseInt(product.getAttribute('data-quantity'), 10);
+      const subtotal = price * quantity;
+      totalCart += subtotal;
+
+      const subtotalElement = product.querySelector('.subtotal');
+      subtotalElement.textContent = `$${subtotal}`;
+    });
+
+    const cartTotalElement = document.getElementById('cartTotal');
+    cartTotalElement.textContent = `$${totalCart}`;
+  });
+
   document.addEventListener('DOMContentLoaded', (event) => {
     const products = document.querySelectorAll('.product');
     let totalCart = 0; // 
@@ -93,8 +113,10 @@ function completePurchase(cid) {
     })
     
     .then(data => {
-
-    const ticketCode = data.data.code;
+    let ticketCode = data.data.code;
+    if (!ticketCode){
+      ticketCode = data.data.newTicket.code
+    }
     window.location.href = `/ticket/`+ticketCode;
 })
         
@@ -125,4 +147,76 @@ async function deleteProduct(_id, cid) {
         console.error('Error al eliminar el producto:', error);
     }
 }
+
+async function clearCart(cid) {
+    const formAction = `/api/carts/${cid}`;
+    
+    try {
+        const response = await fetch(formAction, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Error al vaciar el carrito');
+        }
+        
+        location.reload(); // Recargar la página después de vaciar el carrito
+        console.log('Carrito vaciado correctamente');
+
+    } catch (error) {
+        console.error('Error al vaciar el carrito:', error);
+    }
+}
 </script>
+
+<style>
+   
+    .product-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); 
+        gap: 20px; 
+    }
+
+    .product {
+        border: 1px solid #ccc; 
+        padding: 10px; 
+    }
+
+    /* Estilos del botón que muestra la descripción */
+    .description-button {
+        background-color: #100303;
+        border: 1px solid #ccc;
+        padding: 5px 10px;
+        cursor: pointer;
+        position: relative; 
+        display: inline-block; 
+    }
+
+    /* Estilos del tooltip */
+    .description-button .tooltip {
+        display: none; 
+        background-color: #333;
+        color: #fff;
+        padding: 5px;
+        border-radius: 5px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+   
+    .description-button:hover .tooltip {
+        display: block;
+    }
+
+    
+    .product p {
+        margin: 5px 0; 
+        width: 100px; 
+    }
+</style>

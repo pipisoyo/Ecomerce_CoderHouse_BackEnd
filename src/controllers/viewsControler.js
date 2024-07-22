@@ -79,11 +79,10 @@ const viewsController = {
     renderCart: (req, res) => {
         addLogger(req, res, async () => {
             const cid = req.params.cid;
-            console.log("🚀 ~ addLogger ~ cid:", cid)
     
             try {
                 const cart = await cartsModel.findById(cid).populate('products.product').lean().exec();
-                console.log("🚀 ~ addLogger ~ cart:", cart)
+
                 const products = cart.products.map(element => ({
                     ...element.product,
                     quantity: element.quantity
@@ -163,8 +162,8 @@ const viewsController = {
             addLogger(req, res, async () => {
                 try {
                     const ticketCode = req.params.tcode;
-                    console.log("🚀 ~ addLogger ~ ticketCode:", ticketCode)
                     const ticket = await ticketModel.findOne({ code: ticketCode }).lean().exec();
+
                     req.logger.info('Obteniendo datos del ticket');
         
                     const result = await ticketModel.findOne({ code: ticketCode }).populate('productsToPurchase.product').lean().exec();

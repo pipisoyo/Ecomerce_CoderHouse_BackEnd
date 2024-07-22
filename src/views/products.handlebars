@@ -26,19 +26,25 @@
 <a href="{{nextLink}}">Página siguiente</a>
 {{/if}}
 
-{{#each products}}
-<div>
-  <h2>{{title}}</h2>
-  <p>{{description}}</p>
-  <p>Precio: {{price}}</p>
-  <p>Categoría: {{category}}</p>
-  <form id="cartForm" method="POST">
-    <input type="hidden" id="_id" name="_id" value="{{_id}}">
-    <button type="button" onclick="saveProductId(event, '{{_id}}')">Agregar al carrito</button>
-  </form>
-  <hr>
+<div class="product-container">
+    {{#each products}}
+        <div>
+            <h2>{{title}}</h2>
+            <p>{{description}}</p>
+            <p>Precio: {{price}}</p>
+            <p>Categoría: {{category}}</p>
+            <p>Disponibles: {{stock}}</p>
+            <p>Cantidad: <span id="quantityCounter-{{@index}}">1</span></p>
+            <form id="cartForm" method="POST">
+                <input type="hidden" id="_id" name="_id" value="{{_id}}">
+                <button type="button" onclick="increaseQuantity({{@index}})">+</button>
+                <button type="button" onclick="decreaseQuantity({{@index}})">-</button>
+                <button type="button" onclick="saveProductId(event, '{{_id}}', '{{@index}}')">Agregar al carrito</button>
+            </form>
+            <hr>
+        </div>
+    {{/each}}
 </div>
-{{/each}}
 
 {{#if prevLink}}
 <a href="{{prevLink}}">Página anterior</a>
@@ -65,23 +71,44 @@
     return cartID;
   }
 
-  function saveProductId(event, pid) {
-    const result = "{{result}}"
-    console.log("🚀 ~ saveProductId ~ result:", result)
-    if (result === "true") {
+  let quantity = 1;
 
-      cartId = saveCartId();
+  function increaseQuantity(index) {
+    const quantityCounter = document.getElementById(`quantityCounter-${index}`);
+    let quantity = parseInt(quantityCounter.innerText);
+    quantity++;
+    quantityCounter.innerText = quantity;
+}
+
+function decreaseQuantity(index) {
+    const quantityCounter = document.getElementById(`quantityCounter-${index}`);
+    let quantity = parseInt(quantityCounter.innerText);
+    if (quantity > 1) {
+        quantity--;
+        quantityCounter.innerText = quantity;
     }
-    const prodID = pid;
-    console.log("🚀 ~ prodID:", prodID);
-    updateForm(prodID, cartId);
-  }
+}
 
-  function updateForm(prodID, cartID) {
+  function saveProductId(event, pid, index) {
+    const result = "{{result}}"
+    
+    if (result === "true") {
+        cartId = saveCartId();
+    }
+    
+    const prodID = pid;
+    const quantityCounter = document.getElementById(`quantityCounter-${index}`);
+    const quantity = parseInt(quantityCounter.innerText);
+    
+    updateForm(prodID, cartId, quantity);
+}
+
+  function updateForm(prodID, cartID, quantity) {
     if (!cartID) {
       alert("Seleccione un carrito");
     } else {
       const formAction = "/api/carts/" + cartID + "/product/" + prodID;
+      const requestData = { prodID: prodID, quantity: quantity };
 
 
       fetch(formAction, {
@@ -89,7 +116,7 @@
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prodID: prodID }),
+        body: JSON.stringify(requestData),
       })
         .then(response => response.json())
         .then(data => {
@@ -135,3 +162,16 @@
     window.history.back();
   }
 </script>
+
+<style>
+    .product-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .product-container div {
+        padding: 10px;
+        border: 1px solid #ccc;
+    }
+</style>
