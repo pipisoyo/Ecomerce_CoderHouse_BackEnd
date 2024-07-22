@@ -4,7 +4,7 @@ import { Server } from 'socket.io';
 import config from "../config.js";
 
 const app = express();
-const PORT = config.port;
+const PORT = config.port ||8080
 const DB_URL = config.mongo_url;
 
 /**
