@@ -11,14 +11,14 @@ import { sendMailProductDelete } from '../utils/mailing.js';
 /**
  * Controlador para la gestión de productos.
  */
-const productController = {
+class productController {
 
     /**
      * Recupera todos los productos con opciones de filtrado y paginación.
      * @param {object} req - Objeto de solicitud.
      * @param {object} res - Objeto de respuesta.
      */
-    getAll: (req, res) => {
+    async getAll (req, res) {
         addLogger(req, res, async () => {
             req.logger.debug('Recuperando todos los productos');
 
@@ -35,7 +35,7 @@ const productController = {
                 res.status(500).send({ status: "error", message: "Error al recuperar los productos" });
             }
         });
-    },
+    }
 
 
     /**
@@ -43,7 +43,7 @@ const productController = {
      * @param {object} req - Objeto de solicitud.
      * @param {object} res - Objeto de respuesta.
      */
-    getById: (req, res) => {
+    async getById (req, res) {
         addLogger(req, res, async () => {
             req.logger.info('Recuperando producto por ID');
 
@@ -64,14 +64,14 @@ const productController = {
                 res.status(500).send({ status: "error", message: "Error al recuperar el producto" });
             }
         });
-    },
+    }
 
     /**
      * Agrega un nuevo producto.
      * @param {object} req - Objeto de solicitud.
      * @param {object} res - Objeto de respuesta.
      */
-    addProduct: (req, res) => {
+    async addProduct (req, res) {
         addLogger(req, res, async () => {
             let userRole = req.session.user.role;
             console.log("🚀 ~ addLogger ~ userRole:", userRole)
@@ -115,7 +115,7 @@ const productController = {
                 });
         });
 
-    },
+    }
 
 
     /**
@@ -123,7 +123,7 @@ const productController = {
   * @param {object} req - Objeto de solicitud.
   * @param {object} res - Objeto de respuesta.
   */
-    insertDocument: (req, res) => {
+    async insertDocument (req, res) {
         addLogger(req, res, async () => {
             req.logger.info('Insertando nuevo documento de producto');
 
@@ -141,14 +141,14 @@ const productController = {
                 responses.errorResponse(res, 500, "Error al insertar el documento");
             }
         });
-    },
+    }
 
     /**
  * Actualiza un producto de forma sincrónica.
  * @param {Object} req - Objeto de solicitud HTTP.
  * @param {Object} res - Objeto de respuesta HTTP.
  */
-    updateProduct: (req, res) => {
+    async updateProduct (req, res) {
         addLogger(req, res, async () => {
             req.logger.info('Actualizando un producto');
 
@@ -171,14 +171,14 @@ const productController = {
                 res.status(500).send({ error: "An error occurred while updating the product" });
             }
         });
-    },
+    }
 
     /**
   * Elimina un producto de forma sincrónica.
   * @param {Object} req - Objeto de solicitud HTTP.
   * @param {Object} res - Objeto de respuesta HTTP.
   */
-    deleteProduct: (req, res) => {
+    async deleteProduct (req, res) {
         addLogger(req, res, async () => {
             req.logger.info('Eliminando un producto');
             let userEmail = req.session.user.email;
@@ -215,14 +215,14 @@ const productController = {
                 return res.status(500).send({ error: "Ocurrió un error al eliminar el producto" });
             }
         });
-    },
+    }
 
     /**
   * Vista en tiempo real.
   * @param {Object} req - Objeto de solicitud HTTP.
   * @param {Object} res - Objeto de respuesta HTTP.
   */
-    realTime: (req, res) => {
+    async realTime (req, res) {
         addLogger(req, res, async () => {
             req.logger.info('Obteniendo la lista de productos en tiempo real');
             try {
@@ -234,8 +234,8 @@ const productController = {
                 res.status(500).send('Error al obtener la lista de productos');
             }
         });
-    },
+    }
 
 };
 
-export default productController;
+export default new productController;
