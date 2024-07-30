@@ -9,21 +9,15 @@ import { addLogger } from "../utils/logger.js";
 /**
  * Controlador para la gestión de carritos.
  */
-const cartControler = {
-
+class CartController {
     /**
-     * Recupera un carrito por su ID.
-     * @param {object} req - Objeto de solicitud.
-     * @param {object} res - Objeto de respuesta.
+     * Obtiene un carrito por su ID.
+     * @param {Object} req - Objeto de solicitud HTTP.
+     * @param {Object} res - Objeto de respuesta HTTP.
      */
-    /**
- * Obtiene un carrito por su ID.
- * @param {Object} req - Objeto de solicitud HTTP.
- * @param {Object} res - Objeto de respuesta HTTP.
- */
-    getCartById: (req, res) => {
+    async getCartById(req, res) {
         addLogger(req, res, async () => {
-            req.logger.info('Obteniendo un carrito por su ID');
+            req.logger.info('Getting a cart by its ID');
 
             const cid = req.params.cid;
 
@@ -31,53 +25,48 @@ const cartControler = {
                 const cart = await cartsService.getCartById(cid);
 
                 if (cart.error) {
-                    req.logger.warn('El carrito no existe');
-                    response.errorResponse(res, 404, "El carrito no existe");
+                    req.logger.warn('Cart does not exist');
+                    response.errorResponse(res, 404, "Cart does not exist");
                 } else {
-                    req.logger.info('Carrito recuperado exitosamente');
-                    response.successResponse(res, 200, "Carrito recuperado exitosamente", cart);
+                    req.logger.info('Cart retrieved successfully');
+                    response.successResponse(res, 200, "Cart retrieved successfully", cart);
                 }
             } catch (error) {
-                req.logger.error('Error al recuperar el carrito: ' + error.message);
-                response.errorResponse(res, 500, "Error al recuperar el Carrito");
+                req.logger.error('Error retrieving cart: ' + error.message);
+                response.errorResponse(res, 500, "Error retrieving the Cart");
             }
         });
-    },
+    }
+
     /**
      * Crea un nuevo carrito.
-     * @param {object} req - Objeto de solicitud.
-     * @param {object} res - Objeto de respuesta.
+     * @param {Object} req - Objeto de solicitud HTTP.
+     * @param {Object} res - Objeto de respuesta HTTP.
      */
-    createCart: (req, res) => {
+    async createCart(req, res) {
         addLogger(req, res, async () => {
-            req.logger.info('Creando un nuevo carrito');
+            req.logger.info('Creating a new cart');
 
             try {
                 const newCart = await cartsService.createCart();
-                req.logger.info('Carrito creado exitosamente');
-                response.successResponse(res, 201, "Carrito creado exitosamente", newCart);
+                req.logger.info('Cart created successfully');
+                response.successResponse(res, 201, "Cart created successfully", newCart);
             } catch (error) {
-                req.logger.error('Error al crear el carrito: ' + error.message);
-                console.error("Error al crear el carrito:", error);
-                response.errorResponse(res, 500, "Error al crear el Carrito");
+                req.logger.error('Error creating the cart: ' + error.message);
+                console.error("Error creating the cart:", error);
+                response.errorResponse(res, 500, "Error creating the Cart");
             }
         });
-    },
+    }
 
     /**
- * Agrega un producto al carrito.
- * @param {object} req - Objeto de solicitud.
- * @param {object} res - Objeto de respuesta.
- */
-    addProductToCart: (req, res) => {
+     * Agrega un producto al carrito.
+     * @param {Object} req - Objeto de solicitud HTTP.
+     * @param {Object} res - Objeto de respuesta HTTP.
+     */
+    async addProductToCart(req, res) {
         addLogger(req, res, async () => {
-            /**
-             * @param {string} req.params.pid - ID del producto a agregar.
-             * @param {string} req.params.cid - ID del carrito al que se agrega el producto.
-             * @param {number} quantity - Cantidad del producto a agregar (por defecto: 1).
-             */
-            req.logger.info('Agregando un producto al carrito');
-
+            req.logger.info('Adding a product to the cart');
             const pid = req.params.pid;
             const cid = req.params.cid;
             const quantity = req.body.quantity || 1;
@@ -89,137 +78,138 @@ const cartControler = {
                 if (!cart || cart.length === 0) {
                     cart = await cartsService.createCart();
                 }
-                
+
                 let product = await productsService.getById(pid);
 
                 if (user.role === "premium" && product.owner === user.email) {
-                    req.logger.warn('No puede agregar productos que creaste');
-                    return response.errorResponse(res, 404, "No puede agregar productos que creaste");
+                    req.logger.warn('You cannot add products you created');
+                    return response.errorResponse(res, 404, "You cannot add products you created");
                 }
 
                 await cartsService.addProductToCart(cid, pid, quantity);
-                req.logger.info('Producto agregado al carrito con éxito');
-                return response.successResponse(res, 201, "Producto agregado al carrito");
+                req.logger.info('Product added to cart successfully');
+                return response.successResponse(res, 201, "Product added to cart");
             } catch (error) {
-                req.logger.error('Error al intentar agregar el producto al carrito: ' + error.message);
-                return response.errorResponse(res, 500, "Error al intentar agregar el producto al Carrito");
+                req.logger.error('Error adding the product to the cart: ' + error.message);
+                return response.errorResponse(res, 500, "Error adding the product to the Cart");
             }
         });
-    },
+    }
 
     /**
- * Elimina un producto del carrito.
- * @param {object} req - Objeto de solicitud.
- * @param {object} res - Objeto de respuesta.
- */
-    deleteProduct: (req, res) => {
+     * Elimina un producto del carrito.
+     * @param {Object} req - Objeto de solicitud HTTP.
+     * @param {Object} res - Objeto de respuesta HTTP.
+     */
+    async deleteProduct(req, res) {
         addLogger(req, res, async () => {
-            req.logger.info('Eliminando un producto del carrito');
-
+            req.logger.info('Deleting a product from the cart');
             const cid = req.params.cid;
             const pid = req.params.pid;
 
             try {
                 await cartsService.deleteProduct(cid, pid);
-                req.logger.info('Producto eliminado del carrito con éxito');
-                response.successResponse(res, 200, "Producto eliminado del carrito");
+                req.logger.info('Product deleted from the cart successfully');
+                response.successResponse(res, 200, "Product deleted from the cart");
             } catch (error) {
-                req.logger.error('Error al intentar eliminar el producto del carrito: ' + error.message);
-                response.errorResponse(res, 500, "Error al intentar eliminar el producto del carrito");
+                req.logger.error('Error trying to delete the product from the cart: ' + error.message);
+                response.errorResponse(res, 500, "Error trying to delete the product from the cart");
             }
         });
-    },
+    }
 
     /**
  * Actualiza el contenido del carrito.
  * @param {object} req - Objeto de solicitud.
  * @param {object} res - Objeto de respuesta.
  */
-    updateCart: (req, res) => {
+    /**
+ * Actualiza el contenido del carrito.
+ * @param {Object} req - Objeto de solicitud HTTP.
+ * @param {Object} res - Objeto de respuesta HTTP.
+ */
+    async updateCart(req, res) {
         addLogger(req, res, async () => {
-            req.logger.info('Actualizando el contenido del carrito');
+            req.logger.info('Updating cart content');
 
             const cid = req.params.cid;
             const products = req.body.products;
 
             try {
                 await cartsService.updateCart(cid, products);
-                req.logger.info('Carrito actualizado con éxito');
-                response.successResponse(res, 200, "Carrito actualizado");
+                req.logger.info('Cart updated successfully');
+                response.successResponse(res, 200, "Cart updated");
             } catch (error) {
-                req.logger.error('Error al intentar actualizar el carrito: ' + error.message);
-                response.errorResponse(res, 500, "Error al intentar actualizar el carrito");
+                req.logger.error('Error trying to update the cart: ' + error.message);
+                response.errorResponse(res, 500, "Error trying to update the cart");
             }
         });
-    },
+    }
 
     /**
      * Actualiza la cantidad de un producto en el carrito.
-     * @param {object} req - Objeto de solicitud.
-     * @param {object} res - Objeto de respuesta.
+     * @param {Object} req - Objeto de solicitud HTTP.
+     * @param {Object} res - Objeto de respuesta HTTP.
      */
-    updateQuantity: (req, res) => {
+    async updateQuantity(req, res) {
         addLogger(req, res, async () => {
-            req.logger.info('Actualizando la cantidad de un producto en el carrito');
+            req.logger.info('Updating quantity of a product in the cart');
 
             const cid = req.params.cid;
             const pid = req.params.pid;
-            console.log("🚀 ~ addLogger ~ pid:", pid)
             const quantity = req.body.quantity;
-            console.log("🚀 ~ addLogger ~ quantity:", quantity)
 
             try {
                 await cartsService.updateQuantity(cid, pid, quantity);
-                req.logger.info('Cantidad de producto actualizada con éxito');
-                response.successResponse(res, 200, "Cantidad de producto actualizada");
+                req.logger.info('Product quantity updated successfully');
+                response.successResponse(res, 200, "Product quantity updated");
             } catch (error) {
-                req.logger.error('Error al intentar actualizar la cantidad del producto: ' + error.message);
-                response.errorResponse(res, 500, "Error al intentar actualizar la cantidad del producto");
+                req.logger.error('Error trying to update the product quantity: ' + error.message);
+                response.errorResponse(res, 500, "Error trying to update the product quantity");
             }
         });
-    },
+    }
 
     /**
      * Limpia el carrito eliminando todos los productos.
-     * @param {object} req - Objeto de solicitud.
-     * @param {object} res - Objeto de respuesta.
+     * @param {Object} req - Objeto de solicitud HTTP.
+     * @param {Object} res - Objeto de respuesta HTTP.
      */
-    clearCart: (req, res) => {
+    async clearCart(req, res) {
         addLogger(req, res, async () => {
-            req.logger.info('Limpiando el carrito, eliminando todos los productos');
+            req.logger.info('Clearing the cart, removing all products');
 
             const cid = req.params.cid;
             const products = [];
 
             try {
                 await cartsService.updateCart(cid, products);
-                req.logger.info('Todos los productos eliminados del carrito con éxito');
-                response.successResponse(res, 200, "Todos los productos eliminados del carrito");
+                req.logger.info('All products removed from the cart successfully');
+                response.successResponse(res, 200, "All products removed from the cart");
             } catch (error) {
-                req.logger.error('Error al eliminar los productos del carrito: ' + error.message);
-                response.errorResponse(res, 500, "Error al eliminar los productos del carrito");
+                req.logger.error('Error removing products from the cart: ' + error.message);
+                response.errorResponse(res, 500, "Error removing products from the cart");
             }
         });
-    },
+    }
+
 
 
     /**
-     * Finaliza el proceso de compra de un carrito.
-     * @param {object} req - Objeto de solicitud.
-     * @param {object} res - Objeto de respuesta.
-     */
-    completePurchase: (req, res) => {
+      * Completes the purchase process of a cart.
+      * @param {Object} req - Object of HTTP request.
+      * @param {Object} res - Object of HTTP response.
+      */
+    async completePurchase(req, res) {
         addLogger(req, res, async () => {
+            req.logger.info('Completing the purchase process of a cart');
             
-            req.logger.info('Finalizando el proceso de compra de un carrito');
             const cid = req.params.cid;
-            console.log("🚀 ~ addLogger ~ cid:", cid)
 
             try {
-                // Obtener el carrito por su ID
+                // Obtaining the cart by its ID
                 const cart = await cartsService.getCartById(cid);
 
-                // Verificar el stock de los productos en el carrito
                 const productsToPurchase = [];
                 const productsNotPurchased = [];
 
@@ -227,21 +217,22 @@ const cartControler = {
                     const productId = cart.products[index].product._id.toString();
                     const productData = await productsService.getById(productId);
 
-                    // Verificar y actualizar el stock del producto
                     if (productData.stock >= cart.products[index].quantity) {
                         productData.stock -= cart.products[index].quantity;
                         await cartsService.deleteProduct(cart._id.toString(), productId);
                         await productsService.updateProduct(productId, productData);
                         productsToPurchase.push(cart.products[index]);
                     } else {
-                        productsNotPurchased.push   ({ product: cart.products[index].product, quantity: cart.products[index].quantity });
+                        productsNotPurchased.push({
+                            product: cart.products[index].product,
+                            quantity: cart.products[index].quantity
+                        });
                     }
                 }
+
                 let purchaser = req.user.email || req.user.first_name
 
-                // Verificar si hay productos para comprar antes de generar un ticket
                 if (productsToPurchase.length > 0) {
-                    // Generar un ticket con los datos de la compra
                     const ticketData = {
                         code: generateUniqueCode(cart._id, new Date()),
                         purchase_datetime: new Date(),
@@ -253,36 +244,30 @@ const cartControler = {
                     const newTicket = new ticketModel(ticketData);
                     await newTicket.save();
 
-                    // Manejo de productos no comprados
                     if (productsNotPurchased.length > 0) {
                         const id = cart._id.toString();
                         await cartsService.updateCart(id, productsNotPurchased);
                         sendMail(newTicket);
-                        req.logger.warn('Algunos productos no se pudieron procesar');
-                        response.successResponse(res, 207, "Algunos productos no se pudieron procesar", { productsNotPurchased, newTicket });
+                        req.logger.warn('Some products could not be processed');
+                        response.successResponse(res, 207, "Some products could not be processed", { productsNotPurchased, newTicket });
                     } else {
                         sendMail(newTicket);
-                        req.logger.info('Compra realizada exitosamente');
-                        response.successResponse(res, 200, "Compra realizada exitosamente", newTicket);
+                        req.logger.info('Purchase completed successfully');
+                        response.successResponse(res, 200, "Purchase completed successfully", newTicket);
                     }
                 } else {
-                    req.logger.warn('No se generó un ticket ya que no hay productos para comprar');
-                    response.errorResponse(res, 409, "No se generó un ticket ya que no hay productos para comprar");
+                    req.logger.warn('A ticket was not generated as there are no products to purchase');
+                    response.errorResponse(res, 409, "A ticket was not generated as there are no products to purchase");
                 }
 
             } catch (error) {
-                req.logger.error('Error al finalizar la compra: ' + error.message);
-                response.errorResponse(res, 500, "Error al finalizar la compra");
+                req.logger.error('Error completing the purchase: ' + error.message);
+                response.errorResponse(res, 500, "Error completing the purchase");
             }
         });
-          
-    
-    },
 
-};
+    }
+}
 
-/**
- * Exporta los enrutadores de las rutas Carts.
- * @controlers
- */
-export default cartControler;
+export default new CartController();
+
