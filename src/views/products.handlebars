@@ -1,7 +1,7 @@
 <div>
   <a>Bienvenido {{this.user.first_name}} {{this.user.last_name}} -</a>
   <a href="#" onclick="logout()">Cerrar Sesión -</a>
-  <a onclick="userRole('{{this.user.role}}')" data-role-link="admin" href="">Administracion</a>
+  <a id="roleLink" onclick="userRole('{{this.user.role}}')" data-role-link="admin" href="">Perfil</a>
 </div>
 {{#if result}}
 <select id="cartId" name="cartId" onchange="saveCartId(event)">
@@ -56,13 +56,23 @@
 
 <script>
 
-  function userRole(role) {
+ document.addEventListener('DOMContentLoaded', function() {
+    const role = '{{this.user.role}}'; // Define aquí el rol deseado
+    
+    userRole(role);
+});
+
+function userRole(role) {
     let href = "/";
+    let text = "Perfil";
     if (role === "admin") {
-      href = "/admin";
+        href = "/admin";
+        text = "Administración";
     }
-    document.querySelector('a[data-role-link="admin"]').setAttribute('href', href);
-  }
+    const adminLink = document.querySelector('a[data-role-link="admin"]');
+    adminLink.setAttribute('href', href);
+    adminLink.innerText = text;
+}
   let cartId = "{{cartId}}";
 
   function saveCartId() {

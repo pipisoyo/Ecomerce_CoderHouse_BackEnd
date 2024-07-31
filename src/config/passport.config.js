@@ -6,6 +6,7 @@ import GitHubStrategy from "passport-github2";
 import { Types } from 'mongoose';
 import config from "../config.js";
 import { cartsService } from "../repositories/index.js";
+import { Octokit } from "@octokit/core";
 const { ObjectId } = Types;
 
 const LocalStrategy = local.Strategy;
@@ -91,38 +92,50 @@ const initializePassport = () => {
   passport.use(
     "github",
     new GitHubStrategy(
-      {
-        clientID: "Iv1.b801b07872d3fca4",
-        clientSecret: "435c40e7a171df659e391ed106a3a6c588ab9e6c",
-        callbackURL: "http://localhost:8080/api/sessions/githubcallback"
-      },
-      async (accessToken, refreshToken, profile, done) => {
-        try {
-          let user = await userModel.findOne({email: profile._json.email});
+        {
+            clientID: "Iv1.b801b07872d3fca4",
+            clientSecret: "435c40e7a171df659e391ed106a3a6c588ab9e6c",
+            callbackURL: "http://localhost:8080/api/sessions/githubcallback",
+            scope : ["user : email"]
+        },
+        async (accessToken, refreshToken, profile, done) => {
+            const octokit = new Octokit({ auth: accessToken });
+            const response = await octokit.request('GET /user/public_emails', {
+              headers: {
+                  'X-GitHub-Api-Version': '2022-11-28'
+              }
+          });
 
-          if (!user) {
-            const cart = await cartsService.createCart();
-            const newUser = {
-              first_name: profile._json.name,
-              last_name: "",
-              age: 20,
-              email: profile._json.email,
-              password: "", 
-              role: "user",
-              cart,
-            };
-            await userModel.create(newUser);
-            user = await userModel.findOne({email: profile._json.email});
-            done(null, user);
-          } else {
-            done(null, user);
-          }
-        } catch (error) {
-          return done(error);
+            try {
+              
+              // Continuar con la lógica de autenticación y creación de usuario según sea necesario
+              let user = await userModel.findOne({ email: response.data[0].email });
+              
+              if (!user) {
+        
+                const cart = await cartsService.createCart();
+                const newUser = {
+                  first_name: profile._json.name,
+                  last_name: "",
+                  age: 20,
+                  email:  response.data[0].email,
+                  password: "",
+                  role: "user",
+                  cart,
+                };
+  
+                await userModel.create(newUser);
+                user = await userModel.findOne({ email:  response.data[0].email });
+                    done(null, user);
+                } else {
+                    done(null, user);
+                }
+            } catch (error) {
+                return done(error);
+            }
         }
-      }
     )
-  );
+);
 
   // Serialización y deserialización de usuario
   passport.serializeUser((user, done) => {

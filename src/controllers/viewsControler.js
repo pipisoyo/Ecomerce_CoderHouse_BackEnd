@@ -14,23 +14,23 @@ const productsServices = new Products();
 /**
  * Controlador para la gestión de las vistas y renderizado de páginas.
  */
-const viewsController = {
+class viewsController  {
 
     /**
      * Renderiza la vista del chat.
      * @param {object} req - Objeto de solicitud.
      * @param {object} res - Objeto de respuesta.
      */
-    renderChat: (req, res) => {
+    renderChat (req, res) {
         res.render('chat');
-    },
+    }
 
     /**
      * Renderiza la vista de productos con paginación.
      * @param {object} req - Objeto de solicitud.
      * @param {object} res - Objeto de respuesta.
      */
-    renderProducts: (req, res) => {
+    renderProducts (req, res) {
         addLogger(req, res, async () => {
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
@@ -69,14 +69,14 @@ const viewsController = {
                 response.errorResponse(res, 500, "Error al obtener los productos");
             }
         });
-    },
+    }
 
     /**
      * Renderiza la vista del carrito de compras.
      * @param {object} req - Objeto de solicitud.
      * @param {object} res - Objeto de respuesta.
      */
-    renderCart: (req, res) => {
+    renderCart (req, res) {
         addLogger(req, res, async () => {
             const cid = req.params.cid;
     
@@ -97,41 +97,41 @@ const viewsController = {
                 response.errorResponse(res, 500, "Error en la base de datos");
             }
         });
-    },
+    }
 
     /**
      * Renderiza la vista de registro de usuario.
      * @param {object} req - Objeto de solicitud.
      * @param {object} res - Objeto de respuesta.
      */
-    renderRegister: (req, res) => {
+    renderRegister (req, res) {
         res.render('register');
-    },
+    }
 
     /**
      * Renderiza la vista de inicio de sesión.
      * @param {object} req - Objeto de solicitud.
      * @param {object} res - Objeto de respuesta.
      */
-    renderLogin: (req, res) => {
+    renderLogin (req, res) {
         res.render('login');
-    },
+    }
 
     /**
      * Renderiza la vista del perfil de usuario.
      * @param {object} req - Objeto de solicitud.
      * @param {object} res - Objeto de respuesta.
      */
-    renderProfile: (req, res) => {
+    renderProfile (req, res) {
         res.render('profile', { user: req.session.user });
-    },
+    }
 
     /**
      * Renderiza la vista para restaurar contraseña.
      * @param {object} req - Objeto de solicitud.
      * @param {object} res - Objeto de respuesta.
      */
-    renderRestore: (req, res) => {
+    renderRestore (req, res) {
         addLogger(req, res, async () => {
             const token = req.params.token; 
             jwt.verify(token, 'secretKey', (err, decoded) => {
@@ -142,23 +142,23 @@ const viewsController = {
                 }
             });
         });
-    },
+    }
 
         /**
      * Renderiza la vista para restaurar contraseña.
      * @param {object} req - Objeto de solicitud.
      * @param {object} res - Objeto de respuesta.
      */
-        renderMailRestore: (req, res) => {
+        renderMailRestore (req, res)  {
             res.render('mailRestore');
-        },
+        }
 
         /**
      * Renderiza la vista de productos con paginación.
      * @param {object} req - Objeto de solicitud.
      * @param {object} res - Objeto de respuesta.
      */
-        renderTicket: (req, res) => {
+        renderTicket (req, res) {
             addLogger(req, res, async () => {
                 try {
                     const ticketCode = req.params.tcode;
@@ -178,9 +178,9 @@ const viewsController = {
                     response.errorResponse(res, 500, "Error en la base de datos");
                 }
             });
-        },
+        }
 
-        renderAdminUsers: (req, res) => {
+        renderAdminUsers (req, res) {
             addLogger(req, res, async () => {
                 try {
                     const users = await userModel.find({}).lean().exec();
@@ -195,4 +195,4 @@ const viewsController = {
         }
 };
 
-export default viewsController;
+export default new viewsController;
