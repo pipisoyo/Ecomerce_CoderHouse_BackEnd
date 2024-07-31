@@ -13,7 +13,7 @@ const LocalStrategy = local.Strategy;
 
 
 const admin = { username: config.adminUser , password: config.adminPassword };
-
+const URL = config.url
 /**
  * Inicializa Passport con las estrategias de autenticación.
  */
@@ -95,7 +95,7 @@ const initializePassport = () => {
         {
             clientID: "Iv1.b801b07872d3fca4",
             clientSecret: "435c40e7a171df659e391ed106a3a6c588ab9e6c",
-            callbackURL: "http://localhost:8080/api/sessions/githubcallback",
+            callbackURL: URL+"/api/sessions/githubcallback",
             scope : ["user : email"]
         },
         async (accessToken, refreshToken, profile, done) => {
