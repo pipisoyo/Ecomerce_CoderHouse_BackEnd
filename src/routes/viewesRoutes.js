@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { auth, authCartUser, authUser } from '../config/auth.js';
+import { auth, authCartUser, authUser, authCartUserAndAdmin } from '../config/auth.js';
 import viewsController from '../controllers/viewsControler.js';
 //import { Products } from "../dao/memory/products.memory.js";
 
@@ -24,7 +24,7 @@ viewRoutes.get('/products', auth, viewsController.renderProducts);
  * @name GET /cart/:cid
  * @function
  */
-viewRoutes.get('/cart/:cid', authCartUser, viewsController.renderCart);
+viewRoutes.get('/cart/:cid',authCartUserAndAdmin, viewsController.renderCart);
 
 /**
  * Ruta para renderizar la vista de registro.

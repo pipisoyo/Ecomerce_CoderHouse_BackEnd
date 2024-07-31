@@ -57,7 +57,7 @@
 <script>
 
  document.addEventListener('DOMContentLoaded', function() {
-    const role = '{{this.user.role}}'; // Define aquí el rol deseado
+    const role = '{{this.user.role}}';
     
     userRole(role);
 });
@@ -130,7 +130,11 @@ function decreaseQuantity(index) {
       })
         .then(response => response.json())
         .then(data => {
-          alert(data.message);
+          let message = data.message
+          if (data.status === "error"){
+             message = data.error;
+          }
+          alert(message);
         })
         .catch((error) => {
           alert('Error al agregar el producto');

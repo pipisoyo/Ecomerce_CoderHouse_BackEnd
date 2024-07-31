@@ -19,6 +19,16 @@ export function auth(req, res, next) {
  * @param {object} res - Objeto de respuesta.
  * @param {function} next - Función para pasar al siguiente middleware.
  */
+export function authCartUserAndAdmin(req, res, next) {
+    const requestedCartId = req.params.cid;
+
+    if ((req.session.user && req.session.user.cartId === requestedCartId) || req.session.user.role === 'admin') {
+        next();
+    } else {
+        return res.status(403).send({ status: "error", error: "Acceso denegado" });
+    }
+}
+
 export function authCartUser(req, res, next) {
     const requestedCartId = req.params.cid;
 
