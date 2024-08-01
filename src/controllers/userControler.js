@@ -84,6 +84,7 @@ class UserController {
                     } else {
                         user.documents.push({ name: field, reference: file.path });
                         req.logger.info("Documento cargado correctamente"); // Agregar nuevo documento
+                        
                     }
                 });
 

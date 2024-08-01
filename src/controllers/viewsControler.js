@@ -122,10 +122,13 @@ class viewsController  {
      * @param {object} req - Objeto de solicitud.
      * @param {object} res - Objeto de respuesta.
      */
-    renderProfile (req, res) {
-        res.render('profile', { user: req.session.user });
+    renderProfile(req, res) {
+        const userWithId = {
+            ...req.session.user,
+            _id: req.session.passport.user
+        };
+        res.render('profile', { user: userWithId });
     }
-
     /**
      * Renderiza la vista para restaurar contraseña.
      * @param {object} req - Objeto de solicitud.
